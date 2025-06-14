@@ -17,6 +17,10 @@ export async function getAllLinks(): Promise<Link[]> {
 	try {
 		const data = await fetchWithAuth<ApiLink[]>("/api/links", {
 			method: "GET",
+			// This option tags the fetched data with the "links" cache tag.
+			// It applies to cacheable requests (primarily GET). This allows us to
+			// later invalidate this specific cache using revalidateTag("links")
+			// after a mutation (e.g., create, update, delete) occurs.
 			next: {
 				tags: ["links"],
 			},
@@ -36,6 +40,37 @@ export async function getAllLinks(): Promise<Link[]> {
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
 		console.error("Error fetching links:", message);
+		throw new Error(message);
+	}
+}
+
+export async function updateLink(
+	slug: string,
+	data: Partial<Omit<Link, "slug">>,
+): Promise<Link> {
+	const payload: Partial<Omit<ApiLink, "short_code">> = {};
+
+	if (data.url !== undefined) {
+		payload.original_url = data.url;
+	}
+	if (data.description !== undefined) {
+		payload.description = data.description;
+	}
+	if (data.is_enabled !== undefined) {
+		payload.is_enabled = data.is_enabled ? 1 : 0;
+	}
+
+	try {
+		const updatedApiLink = await fetchWithAuth<ApiLink>(`/api/links/${slug}`, {
+			method: "PATCH",
+			body: payload,
+		});
+
+		return transformApiLinkToLink(updatedApiLink);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error(`Error updating link ${slug}:`, message);
 		throw new Error(message);
 	}
 }

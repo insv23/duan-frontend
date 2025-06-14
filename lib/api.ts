@@ -23,7 +23,6 @@ export const fetchWithAuth = async <T>(
 		headers: {
 			Authorization: `Bearer ${env.BACKEND_API_TOKEN}`,
 			"Content-Type": "application/json",
-			"User-Agent": "Raycast Extension: duan",
 			...options.headers,
 		},
 		method: options.method,
