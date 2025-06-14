@@ -3,8 +3,11 @@
 import { revalidateTag } from "next/cache";
 import { verifySessionAction } from "./auth.actions";
 import type { Link, FormState } from "@/lib/types";
-import { getAllLinks } from "@/lib/services/link.service";
-import { updateLink as updateLinkService } from "@/lib/services/link.service";
+import {
+	getAllLinks,
+	updateLink as updateLinkService,
+	deleteLink as deleteLinkService,
+} from "@/lib/services/link.service";
 import { UpdateLinkSchema } from "@/lib/schemas";
 
 // Helper function for authentication
@@ -63,6 +66,30 @@ export async function updateLink(
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
 		console.error("Error updating link in action:", message);
+		return { message, error: true };
+	}
+}
+
+export async function deleteLink(
+	slug: string,
+): Promise<{ message: string; error?: boolean }> {
+	try {
+		await authenticate();
+
+		if (!slug) {
+			return { message: "Slug is required to delete a link.", error: true };
+		}
+
+		const result = await deleteLinkService(slug);
+
+		// Invalidate the cache for the links list to reflect the deletion.
+		revalidateTag("links");
+
+		return { message: result.message };
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error("Error deleting link in action:", message);
 		return { message, error: true };
 	}
 }

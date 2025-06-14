@@ -74,3 +74,21 @@ export async function updateLink(
 		throw new Error(message);
 	}
 }
+
+export async function deleteLink(slug: string): Promise<{ message: string }> {
+	try {
+		// The backend returns a { message: string } object on successful deletion.
+		const response = await fetchWithAuth<{ message: string }>(
+			`/api/links/${slug}`,
+			{
+				method: "DELETE",
+			},
+		);
+		return response;
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error(`Error deleting link ${slug}:`, message);
+		throw new Error(message);
+	}
+}
