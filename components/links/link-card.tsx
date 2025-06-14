@@ -31,6 +31,7 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { env } from "@/lib/config";
+import { formatDistanceToNow } from "date-fns";
 
 type LinkCardProps = {
 	link: Link;
@@ -120,12 +121,17 @@ export function LinkCard({ link }: LinkCardProps) {
 						<span>{link.visit_count.toLocaleString()} visits</span>
 					</div>
 					<span className="hidden sm:inline">·</span>
-					<span>
+					<span
+						className="truncate text-sm text-muted-foreground"
+						title={
+							link.last_visited_at
+								? new Date(`${link.last_visited_at}Z`).toLocaleString()
+								: new Date(`${link.created_at}Z`).toLocaleString()
+						}
+					>
 						{link.last_visited_at
-							? `Last visited: ${new Date(
-									link.last_visited_at,
-								).toLocaleString()}`
-							: `Created: ${new Date(link.created_at).toLocaleString()}`}
+							? `Last visited: ${formatDistanceToNow(new Date(`${link.last_visited_at}Z`), { addSuffix: true })}`
+							: `Created: ${formatDistanceToNow(new Date(`${link.created_at}Z`), { addSuffix: true })}`}
 					</span>
 				</div>
 				<div className="flex items-center space-x-1 self-end sm:self-auto">
