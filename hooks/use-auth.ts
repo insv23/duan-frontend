@@ -1,4 +1,4 @@
-import { login as loginService, verifyToken } from "@/lib/auth.service";
+import { loginAction, verifySessionAction } from "@/app/actions/auth.actions";
 import { useEffect, useState } from "react";
 
 export function useAuth() {
@@ -10,8 +10,8 @@ export function useAuth() {
 	useEffect(() => {
 		async function doVerifyToken() {
 			try {
-				const data = await verifyToken();
-				if (data.authorized) {
+				const data = await verifySessionAction();
+				if (data.isAuthorized) {
 					setIsAuthorized(true);
 				}
 			} catch (err) {
@@ -27,7 +27,7 @@ export function useAuth() {
 		setError("");
 		setIsSubmitting(true);
 		try {
-			const data = await loginService(token);
+			const data = await loginAction(token);
 			if (data.success) {
 				setIsAuthorized(true);
 			} else {
