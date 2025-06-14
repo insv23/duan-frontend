@@ -1,15 +1,16 @@
-"use client";
+import { LinkList } from "@/components/links/link-list";
+import { Suspense } from "react";
 
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-
-export default function Home() {
-	const [count, setCount] = useState(0);
-
+export default async function Home() {
 	return (
-		<div>
-			<Button onClick={() => setCount((count) => count + 1)}>Click me</Button>
-			<p>You've clicked {count} times.</p>
-		</div>
+		<main className="container mx-auto flex min-h-screen flex-col items-center p-4 pt-24">
+			<Suspense
+				fallback={
+					<p className="text-center text-muted-foreground">Loading links...</p>
+				}
+			>
+				<LinkList />
+			</Suspense>
+		</main>
 	);
 }
