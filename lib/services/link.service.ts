@@ -102,7 +102,7 @@ export async function createLink(data: {
 			method: "POST",
 			body: payload,
 		});
-		return response; // FIXME: 参考上面 transformApiLinkToLink , 应该有个专门的转化，来统一这两个
+		return response;
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
