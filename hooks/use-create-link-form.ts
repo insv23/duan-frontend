@@ -5,8 +5,8 @@ import type { FormState } from "@/lib/types";
 
 const initialState: FormState = { message: "" };
 
-export function useCreateLinkForm({ onSave }: { onSave: () => void }) {
-	const [state, formAction] = useActionState(createLink, initialState);
+export function useCreateLinkForm() {
+	const [actionState, formAction] = useActionState(createLink, initialState);
 
 	const [url, setUrl] = useState("");
 	const [slug, setSlug] = useState("");
@@ -16,14 +16,11 @@ export function useCreateLinkForm({ onSave }: { onSave: () => void }) {
 	const [slugError, setSlugError] = useState("");
 
 	useEffect(() => {
-		if (state.error) {
-			setUrlError(state.fieldErrors?.url?.[0] ?? "");
-			setSlugError(state.fieldErrors?.slug?.[0] ?? "");
-		} else if (state.message) {
-			// On successful submission, call onSave to close the dialog etc.
-			onSave();
+		if (actionState.error) {
+			setUrlError(actionState.fieldErrors?.url?.[0] ?? "");
+			setSlugError(actionState.fieldErrors?.slug?.[0] ?? "");
 		}
-	}, [state, onSave]);
+	}, [actionState]);
 
 	const handleUrlChange = (newUrl: string) => {
 		setUrl(newUrl);
@@ -62,7 +59,7 @@ export function useCreateLinkForm({ onSave }: { onSave: () => void }) {
 
 	return {
 		form: {
-			state,
+			state: actionState,
 			action: formAction,
 		},
 		fields: {
