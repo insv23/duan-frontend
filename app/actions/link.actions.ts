@@ -2,7 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { verifySessionAction } from "./auth.actions";
-import type { Link, FormState } from "@/lib/types";
+import type { Link, FormState, ApiLink } from "@/lib/types";
 import {
 	getAllLinks,
 	updateLink as updateLinkService,
@@ -58,7 +58,19 @@ export async function updateLink(
 
 		const { slug, ...dataToUpdate } = validatedFields.data;
 
-		await updateLinkService(slug, dataToUpdate);
+		// Transform the data to the format expected by the API
+		const payload: Partial<Omit<ApiLink, "short_code">> = {};
+		if (dataToUpdate.url !== undefined) {
+			payload.original_url = dataToUpdate.url;
+		}
+		if (dataToUpdate.description !== undefined) {
+			payload.description = dataToUpdate.description;
+		}
+		if (dataToUpdate.is_enabled !== undefined) {
+			payload.is_enabled = dataToUpdate.is_enabled ? 1 : 0;
+		}
+
+		await updateLinkService(slug, payload);
 
 		// Invalidate the cache for any data tagged with "links".
 		revalidateTag("links");

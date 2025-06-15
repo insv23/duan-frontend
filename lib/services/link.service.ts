@@ -46,20 +46,13 @@ export async function getAllLinks(): Promise<Link[]> {
 
 export async function updateLink(
 	slug: string,
-	data: Partial<Omit<Link, "slug">>, // FIXME: 这部分验证放到 Action 中, 参考下方 createLink
+	payload: Partial<
+		Omit<
+			ApiLink,
+			"short_code" | "created_at" | "last_visited_at" | "visit_count"
+		>
+	>,
 ): Promise<Link> {
-	const payload: Partial<Omit<ApiLink, "short_code">> = {};
-
-	if (data.url !== undefined) {
-		payload.original_url = data.url;
-	}
-	if (data.description !== undefined) {
-		payload.description = data.description;
-	}
-	if (data.is_enabled !== undefined) {
-		payload.is_enabled = data.is_enabled ? 1 : 0;
-	}
-
 	try {
 		const updatedApiLink = await fetchWithAuth<ApiLink>(`/api/links/${slug}`, {
 			method: "PATCH",
