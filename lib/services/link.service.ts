@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "@/lib/api";
-import type { ApiLink, Link } from "@/lib/types";
+import type { ApiLink, CreateLinkResponse, Link } from "@/lib/types";
 
 function transformApiLinkToLink(link: ApiLink): Link {
 	return {
@@ -46,7 +46,7 @@ export async function getAllLinks(): Promise<Link[]> {
 
 export async function updateLink(
 	slug: string,
-	data: Partial<Omit<Link, "slug">>,
+	data: Partial<Omit<Link, "slug">>, // FIXME: 这部分验证放到 Action 中, 参考下方 createLink
 ): Promise<Link> {
 	const payload: Partial<Omit<ApiLink, "short_code">> = {};
 
@@ -89,6 +89,31 @@ export async function deleteLink(slug: string): Promise<{ message: string }> {
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
 		console.error(`Error deleting link ${slug}:`, message);
+		throw new Error(message);
+	}
+}
+
+export async function createLink(data: {
+	slug: string;
+	url: string;
+	description?: string;
+}): Promise<CreateLinkResponse> {
+	const payload = {
+		short_code: data.slug,
+		url: data.url,
+		description: data.description,
+	};
+
+	try {
+		const response = await fetchWithAuth<CreateLinkResponse>("/api/links", {
+			method: "POST",
+			body: payload,
+		});
+		return response; // FIXME: 参考上面 transformApiLinkToLink , 应该有个专门的转化，来统一这两个
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error("Error creating link:", message);
 		throw new Error(message);
 	}
 }

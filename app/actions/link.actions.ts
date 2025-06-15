@@ -7,8 +7,9 @@ import {
 	getAllLinks,
 	updateLink as updateLinkService,
 	deleteLink as deleteLinkService,
+	createLink as createLinkService,
 } from "@/lib/services/link.service";
-import { UpdateLinkSchema } from "@/lib/schemas";
+import { UpdateLinkSchema, CreateLinkSchema } from "@/lib/schemas";
 
 // Helper function for authentication
 async function authenticate() {
@@ -90,6 +91,40 @@ export async function deleteLink(
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
 		console.error("Error deleting link in action:", message);
+		return { message, error: true };
+	}
+}
+
+export async function createLink(
+	state: FormState,
+	formData: FormData,
+): Promise<FormState> {
+	try {
+		await authenticate();
+
+		const validatedFields = CreateLinkSchema.safeParse({
+			slug: formData.get("slug"),
+			url: formData.get("url"),
+			description: formData.get("description"),
+		});
+
+		if (!validatedFields.success) {
+			const fieldErrors = validatedFields.error.flatten().fieldErrors;
+			return {
+				message: "Invalid data provided. Please check the fields below.",
+				error: true,
+				fieldErrors,
+			};
+		}
+
+		await createLinkService(validatedFields.data);
+
+		revalidateTag("links");
+		return { message: "Link created successfully." };
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error("Error creating link in action:", message);
 		return { message, error: true };
 	}
 }

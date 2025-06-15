@@ -18,7 +18,20 @@ export type ApiLink = {
 	visit_count: number;
 };
 
+export type CreateLinkResponse = {
+	message: string;
+	short_code: string;
+	short_url: string;
+	original_url: string;
+};
+
 export type FormState = {
 	message: string;
 	error?: boolean;
+	fieldErrors?: {
+		url?: string[];
+		slug?: string[];
+		description?: string[];
+		_root?: string[];
+	};
 };
