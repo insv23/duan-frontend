@@ -1,6 +1,6 @@
 import { listLinks } from "@/app/actions/link.actions";
 import { LinkCard } from "./link-card";
-import { CreateLinkButton } from "./create-link-button";
+import { CreateLinkDialog } from "./create-link-dialog";
 
 export async function LinkList() {
 	const links = await listLinks();
@@ -15,7 +15,7 @@ export async function LinkList() {
 					Get started by creating your first short link.
 				</p>
 				<div className="mt-6">
-					<CreateLinkButton />
+					<CreateLinkDialog />
 				</div>
 			</div>
 		);

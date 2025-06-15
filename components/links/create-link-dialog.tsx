@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { useCreateLinkForm } from "@/hooks/use-create-link-form";
+import { Plus } from "lucide-react";
 
 function SubmitButton({ isValid }: { isValid: boolean }) {
 	const { pending } = useFormStatus();
@@ -59,7 +60,10 @@ export function CreateLinkDialog() {
 			}}
 		>
 			<DialogTrigger asChild>
-				<Button>Create Link</Button>
+				<Button>
+					<Plus className="h-4 w-4" />
+					Create Link
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
