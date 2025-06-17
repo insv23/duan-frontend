@@ -29,6 +29,7 @@ function SubmitButton({ isValid }: { isValid: boolean }) {
 	);
 }
 
+
 /**
  * Solves a key problem with `useActionState`: its state is persistent.
  * A regular `useEffect` watching the state would re-trigger on every render
@@ -92,8 +93,8 @@ export function CreateLinkDialog() {
 	const { form, fields, handlers, isFormValid } = useCreateLinkForm();
 
 	const handleSuccess = () => {
+		handlers.handleSuccess(); // This will add slug to cache and reset form
 		setOpen(false);
-		handlers.resetForm();
 	};
 
 	return (
@@ -138,17 +139,30 @@ export function CreateLinkDialog() {
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="slug">Slug</Label>
-						<Input
-							id="slug"
-							name="slug"
-							placeholder="custom-slug"
-							value={fields.slug}
-							onChange={(e) => handlers.handleSlugChange(e.target.value)}
-							onBlur={handlers.handleSlugBlur}
-							required
-						/>
+						<div className="relative">
+							<Input
+								id="slug"
+								name="slug"
+								placeholder="custom-slug"
+								value={fields.slug}
+								onChange={(e) => handlers.handleSlugChange(e.target.value)}
+								onBlur={handlers.handleSlugBlur}
+								required
+								className={`${
+									fields.slugError?.includes("✅") ? "border-green-500 focus:border-green-500" :
+									fields.slugError?.includes("❌") ? "border-red-500 focus:border-red-500" :
+									""
+								}`}
+							/>
+						</div>
 						{fields.slugError && (
-							<p className="text-sm text-red-500">{fields.slugError}</p>
+							<p className={`text-sm ${
+								fields.slugError.includes("✅") ? "text-green-600 dark:text-green-400" :
+								fields.slugError.includes("🔄") ? "text-blue-600 dark:text-blue-400" :
+								"text-red-500"
+							}`}>
+								{fields.slugError}
+							</p>
 						)}
 					</div>
 					<div className="grid gap-2">

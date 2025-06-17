@@ -4,6 +4,7 @@ import "./globals.css";
 import { TokenProvider } from "@/components/auth/token-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/layout/header";
+import { SlugsProvider } from "@/components/links/slugs-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -77,9 +78,11 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<TokenProvider>
-					<Header />
-					{children}
-					<Toaster />
+					<SlugsProvider>
+						<Header />
+						{children}
+						<Toaster />
+					</SlugsProvider>
 				</TokenProvider>
 			</body>
 		</html>

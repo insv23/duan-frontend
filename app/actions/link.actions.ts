@@ -9,6 +9,7 @@ import {
 	deleteLink as deleteLinkService,
 	createLink as createLinkService,
 } from "@/lib/services/link.service";
+import { getAllSlugs as getAllSlugsService } from "@/lib/services/slug.service";
 import { UpdateLinkSchema, CreateLinkSchema } from "@/lib/schemas";
 
 // Helper function for authentication
@@ -95,8 +96,9 @@ export async function deleteLink(
 
 		const result = await deleteLinkService(slug);
 
-		// Invalidate the cache for the links list to reflect the deletion.
+		// Invalidate the cache for the links list and slugs to reflect the deletion.
 		revalidateTag("links");
+		revalidateTag("slugs");
 
 		return { message: result.message };
 	} catch (error) {
@@ -132,11 +134,26 @@ export async function createLink(
 		await createLinkService(validatedFields.data);
 
 		revalidateTag("links");
+		revalidateTag("slugs");
 		return { message: "Link created successfully." };
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred.";
 		console.error("Error creating link in action:", message);
 		return { message, error: true };
+	}
+}
+
+export async function getAllSlugs(): Promise<string[]> {
+	try {
+		await authenticate();
+		const slugs = await getAllSlugsService();
+		return slugs;
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred.";
+		console.error("Error fetching slugs in action:", message);
+		// Return empty array on error to prevent UI from breaking
+		return [];
 	}
 }

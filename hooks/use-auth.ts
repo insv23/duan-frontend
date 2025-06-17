@@ -1,3 +1,5 @@
+"use client";
+
 import { loginAction, verifySessionAction } from "@/app/actions/auth.actions";
 import { useEffect, useState } from "react";
 
