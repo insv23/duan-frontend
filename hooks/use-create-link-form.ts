@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { createLink } from "@/app/actions/link.actions";
 import { CreateLinkSchema } from "@/lib/schemas";
 import { useSlugAvailability, useSlugManager } from "@/hooks/use-slugs";
+import { generateRandomSlug } from "@/lib/utils";
 import type { FormState } from "@/lib/types";
 
 const initialState: FormState = { message: "" };
@@ -72,6 +73,13 @@ export function useCreateLinkForm() {
 		}
 	};
 
+	const generateSlug = () => {
+		const newSlug = generateRandomSlug();
+		setSlug(newSlug);
+		// Clear any existing errors when generating
+		setSlugError("");
+	};
+
 	const resetForm = () => {
 		setUrl("");
 		setSlug("");
@@ -113,6 +121,7 @@ export function useCreateLinkForm() {
 			setDescription,
 			handleUrlBlur,
 			handleSlugBlur,
+			generateSlug,
 			resetForm,
 			handleSuccess,
 		},

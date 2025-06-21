@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { useCreateLinkForm } from "@/hooks/use-create-link-form";
-import { Plus } from "lucide-react";
+import { Plus, Shuffle } from "lucide-react";
 import type { FormState } from "@/lib/types";
 
 function SubmitButton({ isValid }: { isValid: boolean }) {
@@ -139,7 +139,7 @@ export function CreateLinkDialog() {
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="slug">Slug</Label>
-						<div className="relative">
+						<div className="relative flex gap-2">
 							<Input
 								id="slug"
 								name="slug"
@@ -154,6 +154,15 @@ export function CreateLinkDialog() {
 									""
 								}`}
 							/>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								onClick={handlers.generateSlug}
+								title="Generate random slug"
+							>
+								<Shuffle className="h-4 w-4" />
+							</Button>
 						</div>
 						{fields.slugError && (
 							<p className={`text-sm ${
