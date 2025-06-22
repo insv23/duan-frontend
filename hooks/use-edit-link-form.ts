@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useActionState } from "react";
+import { useState, useMemo, useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { updateLink } from "@/app/actions/link.actions";
 import type { Link, FormState } from "@/lib/types";
@@ -19,6 +19,7 @@ export function useEditLinkForm({ link, onSave }: UseEditLinkFormProps) {
 
 	const initialState: FormState = { message: "", error: false };
 	const [formState, dispatch] = useActionState(updateLink, initialState);
+	const previousMessageRef = useRef<string | undefined>(undefined);
 
 	const isDirty = useMemo(
 		() =>
@@ -29,7 +30,7 @@ export function useEditLinkForm({ link, onSave }: UseEditLinkFormProps) {
 	);
 
 	useEffect(() => {
-		if (formState.message) {
+		if (formState.message && formState.message !== previousMessageRef.current) {
 			if (formState.error) {
 				toast.error(formState.message);
 			} else {
@@ -37,6 +38,7 @@ export function useEditLinkForm({ link, onSave }: UseEditLinkFormProps) {
 				onSave();
 			}
 		}
+		previousMessageRef.current = formState.message;
 	}, [formState, onSave]);
 
 	const handleUrlBlur = () => {
