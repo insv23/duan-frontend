@@ -25,13 +25,11 @@ function ThemeToggle() {
 		document.documentElement.style.setProperty("--x", `${x}px`);
 		document.documentElement.style.setProperty("--y", `${y}px`);
 
-		// @ts-expect-error
 		if (!document.startViewTransition) {
 			setTheme(theme);
 			return;
 		}
 
-		// @ts-expect-error
 		document.startViewTransition(() => {
 			setTheme(theme);
 		});
