@@ -120,3 +120,35 @@
     @apply bg-background text-foreground;
   }
 }
+
+html {
+  --x: 50%;
+  --y: 50%;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999;
+}
+
+@keyframes reveal {
+  from {
+    clip-path: circle(0% at var(--x) var(--y));
+  }
+  to {
+    clip-path: circle(150% at var(--x) var(--y));
+  }
+}
+
+::view-transition-new(root) {
+  animation: reveal 0.5s ease-in-out;
+}

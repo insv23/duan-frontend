@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CreateLinkDialog } from "@/components/links/create-link-dialog";
 import { SearchInput } from "./search-input";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Header() {
 	return (
@@ -19,6 +20,7 @@ export function Header() {
 					<div className="w-full max-w-lg">
 						<SearchInput />
 					</div>
+					<ThemeToggle />
 					<nav>
 						<CreateLinkDialog />
 					</nav>

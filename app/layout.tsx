@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/layout/header";
 import { SlugsProvider } from "@/components/links/slugs-provider";
 import { SearchProvider } from "@/components/search-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -76,19 +77,26 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<TokenProvider>
-					<SlugsProvider>
-						<SearchProvider>
-							<Header />
-							{children}
-							<Toaster />
-						</SearchProvider>
-					</SlugsProvider>
-				</TokenProvider>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<TokenProvider>
+						<SlugsProvider>
+							<SearchProvider>
+								<Header />
+								{children}
+								<Toaster />
+							</SearchProvider>
+						</SlugsProvider>
+					</TokenProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);
