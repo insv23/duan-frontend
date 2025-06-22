@@ -152,7 +152,7 @@ function EditLinkForm({
 					name="description"
 					value={state.description}
 					onChange={(e) => handlers.setDescription(e.target.value)}
-					className="col-span-3"
+					className="col-span-3 max-h-[25vh] min-h-[80px] overflow-y-auto resize-none"
 				/>
 			</div>
 			<div className="grid grid-cols-4 items-center gap-4">

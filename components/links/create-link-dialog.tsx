@@ -29,7 +29,6 @@ function SubmitButton({ isValid }: { isValid: boolean }) {
 	);
 }
 
-
 /**
  * Solves a key problem with `useActionState`: its state is persistent.
  * A regular `useEffect` watching the state would re-trigger on every render
@@ -149,9 +148,11 @@ export function CreateLinkDialog() {
 								onBlur={handlers.handleSlugBlur}
 								required
 								className={`${
-									fields.slugError?.includes("✅") ? "border-green-500 focus:border-green-500" :
-									fields.slugError?.includes("❌") ? "border-red-500 focus:border-red-500" :
-									""
+									fields.slugError?.includes("✅")
+										? "border-green-500 focus:border-green-500"
+										: fields.slugError?.includes("❌")
+											? "border-red-500 focus:border-red-500"
+											: ""
 								}`}
 							/>
 							<Button
@@ -165,11 +166,15 @@ export function CreateLinkDialog() {
 							</Button>
 						</div>
 						{fields.slugError && (
-							<p className={`text-sm ${
-								fields.slugError.includes("✅") ? "text-green-600 dark:text-green-400" :
-								fields.slugError.includes("🔄") ? "text-blue-600 dark:text-blue-400" :
-								"text-red-500"
-							}`}>
+							<p
+								className={`text-sm ${
+									fields.slugError.includes("✅")
+										? "text-green-600 dark:text-green-400"
+										: fields.slugError.includes("🔄")
+											? "text-blue-600 dark:text-blue-400"
+											: "text-red-500"
+								}`}
+							>
 								{fields.slugError}
 							</p>
 						)}
@@ -182,6 +187,7 @@ export function CreateLinkDialog() {
 							placeholder="A short description (optional)"
 							value={fields.description}
 							onChange={(e) => handlers.setDescription(e.target.value)}
+							className="max-h-[25vh] min-h-[80px] overflow-y-auto resize-none"
 						/>
 					</div>
 					<DialogFooter>
