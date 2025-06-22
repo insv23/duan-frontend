@@ -2,6 +2,9 @@
 
 Duan is a simple and modern web application for managing and shortening URLs. It provides a clean interface to create, view, search, and manage your short links.
 
+<img width="1551" alt="image" src="https://github.com/user-attachments/assets/405af8d7-6158-4712-a44a-ba2d98feda47" />
+
+
 ## Prerequisites
 
 Before setting up this frontend application, you need to deploy the backend API first:
