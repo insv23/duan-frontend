@@ -1,6 +1,8 @@
 import { LinkList } from "@/components/links/link-list";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
 	return (
 		<main className="container mx-auto flex min-h-screen flex-col items-center p-4 pt-24">
