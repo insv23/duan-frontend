@@ -40,7 +40,12 @@ export function useCreateLinkForm() {
 			setSlugError("✅ Available");
 		} else if (status === "idle" && slug.trim()) {
 			// Clear status messages but keep format validation errors
-			if (slugError && (slugError.includes("🔄") || slugError.includes("❌") || slugError.includes("✅"))) {
+			if (
+				slugError &&
+				(slugError.includes("🔄") ||
+					slugError.includes("❌") ||
+					slugError.includes("✅"))
+			) {
 				setSlugError("");
 			}
 		}
@@ -54,7 +59,12 @@ export function useCreateLinkForm() {
 	const handleSlugChange = (newSlug: string) => {
 		setSlug(newSlug);
 		// Clear status messages when typing, but keep format validation errors
-		if (slugError && (slugError.includes("🔄") || slugError.includes("❌") || slugError.includes("✅"))) {
+		if (
+			slugError &&
+			(slugError.includes("🔄") ||
+				slugError.includes("❌") ||
+				slugError.includes("✅"))
+		) {
 			setSlugError("");
 		}
 	};
@@ -98,8 +108,8 @@ export function useCreateLinkForm() {
 	};
 
 	const isFormValid =
-		!urlError && 
-		url.trim() !== "" && 
+		!urlError &&
+		url.trim() !== "" &&
 		slug.trim() !== "" &&
 		(!slugError || slugError === "✅ Available"); // Allow submission only if no error or slug is available
 
@@ -128,3 +138,5 @@ export function useCreateLinkForm() {
 		isFormValid,
 	};
 }
+
+export type UseCreateLinkForm = ReturnType<typeof useCreateLinkForm>;

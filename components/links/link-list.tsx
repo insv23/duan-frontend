@@ -1,6 +1,6 @@
 import { listLinks } from "@/app/actions/link.actions";
-import { LinkCard } from "./link-card";
 import { CreateLinkDialog } from "./create-link-dialog";
+import { FilteredLinkList } from "./filtered-link-list";
 
 export async function LinkList() {
 	const links = await listLinks();
@@ -21,11 +21,5 @@ export async function LinkList() {
 		);
 	}
 
-	return (
-		<div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-			{links.map((link) => (
-				<LinkCard key={link.slug} link={link} />
-			))}
-		</div>
-	);
+	return <FilteredLinkList links={links} />;
 }

@@ -10,15 +10,28 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import { useCreateLinkForm } from "@/hooks/use-create-link-form";
+import {
+	useCreateLinkForm,
+	type UseCreateLinkForm,
+} from "@/hooks/use-create-link-form";
 import { Plus, Shuffle } from "lucide-react";
 import type { FormState } from "@/lib/types";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function SubmitButton({ isValid }: { isValid: boolean }) {
 	const { pending } = useFormStatus();
@@ -87,124 +100,182 @@ function FormEffects({
 	return null;
 }
 
+function CreateLinkForm({
+	form,
+	fields,
+	handlers,
+	isFormValid,
+	onSuccess,
+}: {
+	form: UseCreateLinkForm["form"];
+	fields: UseCreateLinkForm["fields"];
+	handlers: UseCreateLinkForm["handlers"];
+	isFormValid: UseCreateLinkForm["isFormValid"];
+	onSuccess: () => void;
+}) {
+	return (
+		<form action={form.action} className="grid gap-4 py-4">
+			<FormEffects formState={form.state} onSuccess={onSuccess} />
+			<div className="grid gap-2">
+				<Label htmlFor="url">URL</Label>
+				<Input
+					id="url"
+					name="url"
+					placeholder="https://example.com"
+					value={fields.url}
+					onChange={(e) => handlers.handleUrlChange(e.target.value)}
+					onBlur={handlers.handleUrlBlur}
+					required
+				/>
+				{fields.urlError && (
+					<p className="text-sm text-red-500">{fields.urlError}</p>
+				)}
+			</div>
+			<div className="grid gap-2">
+				<Label htmlFor="slug">Slug</Label>
+				<div className="relative flex gap-2">
+					<Input
+						id="slug"
+						name="slug"
+						placeholder="custom-slug"
+						value={fields.slug}
+						onChange={(e) => handlers.handleSlugChange(e.target.value)}
+						onBlur={handlers.handleSlugBlur}
+						required
+						className={`${
+							fields.slugError?.includes("✅")
+								? "border-green-500 focus:border-green-500"
+								: fields.slugError?.includes("❌")
+									? "border-red-500 focus:border-red-500"
+									: ""
+						}`}
+					/>
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						onClick={handlers.generateSlug}
+						title="Generate random slug"
+					>
+						<Shuffle className="h-4 w-4" />
+					</Button>
+				</div>
+				{fields.slugError && (
+					<p
+						className={`text-sm ${
+							fields.slugError.includes("✅")
+								? "text-green-600 dark:text-green-400"
+								: fields.slugError.includes("🔄")
+									? "text-blue-600 dark:text-blue-400"
+									: "text-red-500"
+						}`}
+					>
+						{fields.slugError}
+					</p>
+				)}
+			</div>
+			<div className="grid gap-2">
+				<Label htmlFor="description">Description</Label>
+				<Textarea
+					id="description"
+					name="description"
+					placeholder="A short description (optional)"
+					value={fields.description}
+					onChange={(e) => handlers.setDescription(e.target.value)}
+					className="max-h-[25vh] min-h-[80px] overflow-y-auto resize-none"
+				/>
+			</div>
+			<DialogFooter>
+				<SubmitButton isValid={isFormValid} />
+			</DialogFooter>
+		</form>
+	);
+}
+
 export function CreateLinkDialog() {
 	const [open, setOpen] = useState(false);
 	const { form, fields, handlers, isFormValid } = useCreateLinkForm();
+	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	const handleSuccess = () => {
 		handlers.handleSuccess(); // This will add slug to cache and reset form
 		setOpen(false);
 	};
 
+	const dialogProps = {
+		open,
+		onOpenChange: (isOpen: boolean) => {
+			setOpen(isOpen);
+			if (!isOpen) {
+				handlers.resetForm();
+			}
+		},
+	};
+
+	if (isDesktop) {
+		return (
+			<Dialog {...dialogProps}>
+				<DialogTrigger asChild>
+					<Button>
+						<Plus className="mr-2 h-4 w-4" />
+						Create Link
+					</Button>
+				</DialogTrigger>
+				<DialogContent className="sm:max-w-[425px]">
+					<DialogHeader>
+						<DialogTitle>Create a new link</DialogTitle>
+						<DialogDescription>
+							Enter the details for your new short link.
+						</DialogDescription>
+					</DialogHeader>
+					<CreateLinkForm
+						form={form}
+						fields={fields}
+						handlers={handlers}
+						isFormValid={isFormValid}
+						onSuccess={handleSuccess}
+					/>
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
 	return (
-		<Dialog
-			open={open}
-			onOpenChange={(isOpen) => {
-				setOpen(isOpen);
-				if (!isOpen) {
-					handlers.resetForm();
-				}
-			}}
-		>
-			<DialogTrigger asChild>
-				<Button>
-					<Plus className="h-4 w-4" />
-					Create Link
+		<Drawer {...dialogProps}>
+			<DrawerTrigger asChild>
+				<Button size="icon">
+					<Plus className="h-5 w-5" />
+					<span className="sr-only">Create Link</span>
 				</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>Create a new link</DialogTitle>
+			</DrawerTrigger>
+			<DrawerContent>
+				<DrawerHeader className="text-left">
+					<DrawerTitle>Create a new link</DrawerTitle>
 					<DialogDescription>
 						Enter the details for your new short link.
 					</DialogDescription>
-				</DialogHeader>
-				<form action={form.action} className="grid gap-4 py-4">
-					<FormEffects formState={form.state} onSuccess={handleSuccess} />
-					<div className="grid gap-2">
-						<Label htmlFor="url">URL</Label>
-						<Input
-							id="url"
-							name="url"
-							placeholder="https://example.com"
-							value={fields.url}
-							onChange={(e) => handlers.handleUrlChange(e.target.value)}
-							onBlur={handlers.handleUrlBlur}
-							required
-						/>
-						{fields.urlError && (
-							<p className="text-sm text-red-500">{fields.urlError}</p>
-						)}
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="slug">Slug</Label>
-						<div className="relative flex gap-2">
-							<Input
-								id="slug"
-								name="slug"
-								placeholder="custom-slug"
-								value={fields.slug}
-								onChange={(e) => handlers.handleSlugChange(e.target.value)}
-								onBlur={handlers.handleSlugBlur}
-								required
-								className={`${
-									fields.slugError?.includes("✅")
-										? "border-green-500 focus:border-green-500"
-										: fields.slugError?.includes("❌")
-											? "border-red-500 focus:border-red-500"
-											: ""
-								}`}
-							/>
-							<Button
-								type="button"
-								variant="outline"
-								size="icon"
-								onClick={handlers.generateSlug}
-								title="Generate random slug"
-							>
-								<Shuffle className="h-4 w-4" />
-							</Button>
-						</div>
-						{fields.slugError && (
-							<p
-								className={`text-sm ${
-									fields.slugError.includes("✅")
-										? "text-green-600 dark:text-green-400"
-										: fields.slugError.includes("🔄")
-											? "text-blue-600 dark:text-blue-400"
-											: "text-red-500"
-								}`}
-							>
-								{fields.slugError}
-							</p>
-						)}
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="description">Description</Label>
-						<Textarea
-							id="description"
-							name="description"
-							placeholder="A short description (optional)"
-							value={fields.description}
-							onChange={(e) => handlers.setDescription(e.target.value)}
-							className="max-h-[25vh] min-h-[80px] overflow-y-auto resize-none"
-						/>
-					</div>
-					<DialogFooter>
+				</DrawerHeader>
+				<div className="px-4">
+					<CreateLinkForm
+						form={form}
+						fields={fields}
+						handlers={handlers}
+						isFormValid={isFormValid}
+						onSuccess={handleSuccess}
+					/>
+				</div>
+				<DrawerFooter className="pt-2">
+					<DrawerClose asChild>
 						<Button
 							type="button"
 							variant="outline"
-							onClick={() => {
-								setOpen(false);
-								handlers.resetForm();
-							}}
+							onClick={() => handlers.resetForm()}
 						>
 							Cancel
 						</Button>
-						<SubmitButton isValid={isFormValid} />
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+					</DrawerClose>
+				</DrawerFooter>
+			</DrawerContent>
+		</Drawer>
 	);
 }
